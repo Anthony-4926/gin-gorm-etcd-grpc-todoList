@@ -2,11 +2,10 @@ package discovery
 
 import (
 	"context"
-	"time"
-
 	"github.com/sirupsen/logrus"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc/resolver"
+	"time"
 )
 
 const (
@@ -48,7 +47,7 @@ func (r *Resolver) Scheme() string {
 func (r *Resolver) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
 	r.cc = cc
 
-	r.keyPrifix = BuildPrefix(Server{Name: target.Endpoint, Version: target.Authority})
+	r.keyPrifix = BuildPrefix(ServiceInfo{Name: target.Endpoint, Version: target.Authority})
 	if _, err := r.start(); err != nil {
 		return nil, err
 	}
@@ -110,7 +109,7 @@ func (r *Resolver) watch() {
 // update
 func (r *Resolver) update(events []*clientv3.Event) {
 	for _, ev := range events {
-		var info Server
+		var info ServiceInfo
 		var err error
 
 		switch ev.Type {

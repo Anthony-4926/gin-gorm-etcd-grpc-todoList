@@ -21,7 +21,7 @@ type Register struct {
 	leasesID    clientv3.LeaseID                        // 租赁ID，
 	keepAliveCh <-chan *clientv3.LeaseKeepAliveResponse // 客户端和etcd通信的通道
 
-	srvInfo  Server
+	srvInfo  ServiceInfo
 	interval int64            // 心跳周期
 	cli      *clientv3.Client // 连接etcd的客户端
 	logger   *logrus.Logger
@@ -36,12 +36,12 @@ func NewRegister(etcdAddrs []string, logger *logrus.Logger) *Register {
 	}
 }
 
-// Register 注册服务，申请租赁凭证，并向etcd挂载一个节点
-func (r *Register) Register(srvInfo Server, interval int64) (chan<- struct{}, error) {
+// Register 注册服务，申请租赁凭证，并向etcd挂载一个【服务名：服务地址】的节点
+func (r *Register) Register(serInfo ServiceInfo, interval int64) (chan<- struct{}, error) {
 	var err error
 
 	// 检查一下
-	if strings.Split(srvInfo.Addr, ":")[0] == "" {
+	if strings.Split(serInfo.Addr, ":")[0] == "" {
 		return nil, errors.New("invalid ip address")
 	}
 
@@ -52,7 +52,7 @@ func (r *Register) Register(srvInfo Server, interval int64) (chan<- struct{}, er
 		return nil, err
 	}
 
-	r.srvInfo = srvInfo
+	r.srvInfo = serInfo
 	r.interval = interval
 	// 前边都是注册前的数据准备, 这个方法才是与etcd沟通
 	if err = r.register(); err != nil {
@@ -71,7 +71,7 @@ func (r *Register) register() error {
 	defer cancel()
 
 	// 通过etcd客户端租赁 生成租赁合同哦
-	// 仅仅是获取租赁凭证，此时服务并没有挂在上去
+	// 仅仅是获取租赁凭证，此时服务信息并没有挂在上去
 	// leaseResp 租赁凭证
 	leaseResp, err := r.cli.Grant(ctx, r.interval)
 	if err != nil {
@@ -90,7 +90,7 @@ func (r *Register) register() error {
 		return err
 	}
 
-	// 这个是真正的挂载服务
+	// 这个是真正的挂载服务信息
 	_, err = r.cli.Put(context.Background(), BuildRegisterPath(r.srvInfo), string(data), clientv3.WithLease(r.leasesID))
 
 	return err
@@ -170,13 +170,13 @@ func (r *Register) UpdateHandler() http.HandlerFunc {
 	}
 }
 
-func (r *Register) GetServerInfo() (Server, error) {
+func (r *Register) GetServerInfo() (ServiceInfo, error) {
 	resp, err := r.cli.Get(context.Background(), BuildRegisterPath(r.srvInfo))
 	if err != nil {
 		return r.srvInfo, err
 	}
 
-	server := Server{}
+	server := ServiceInfo{}
 	if resp.Count >= 1 {
 		if err := json.Unmarshal(resp.Kvs[0].Value, &server); err != nil {
 			return server, err

@@ -1,0 +1,5 @@
+server:
+  domain: api-gateway
+  port: :4000
+  jwtSecret: yijiansanlian
+  version: 1.0

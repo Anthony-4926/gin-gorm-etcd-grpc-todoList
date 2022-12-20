@@ -15,32 +15,36 @@ import (
 func main() {
 	config.InitConfig()
 	repository.InitDB()
-	// etcd 地址
+	// gprc 与外界通信的地址端口  127.0.0.1: 10001
+	grpcAddress := viper.GetString("grpcServer.grpcAddress")
+
+	// 准备一个grpc server
+	grpcServer := grpc.NewServer()
+	defer grpcServer.Stop()
+
+	// 服务绑定：服务动作 --> grpc
+	// 把我们的服务动作绑定在grpc server中，这样，grpc server就是一个代理
+	service.RegisterUserServiceServer(grpcServer, handler.NewUserService())
+
+	// 服务注册：grpc --> etcd
+	// 准备一个etcd
 	etcdAddress := []string{viper.GetString("etcd.address")}
-	//	服务的注册
-	etcdRegister := discovery.NewRegister(etcdAddress, logrus.New())
+	register := discovery.NewRegister(etcdAddress, logrus.New())
 
-	grpcAddress := viper.GetString("server.grpcAddress")
-
-	userNode := discovery.Server{
-		Name: viper.GetString("server.domain"),
+	userServiceInfor := discovery.ServiceInfo{
+		Name: viper.GetString("grpcServer.domain"),
 		Addr: grpcAddress,
 	}
+	if _, err := register.Register(userServiceInfor, 10); err != nil {
+		panic(err)
+	}
 
-	server := grpc.NewServer()
-	defer server.Stop()
-
-	// 绑定服务
-	service.RegisterUserServiceServer(server, handler.NewUserService())
+	// 对外暴露grpc，监听对grpc的请求
 	listen, err := net.Listen("tcp", grpcAddress)
 	if err != nil {
 		panic(err)
 	}
-
-	if _, err := etcdRegister.Register(userNode, 10); err != nil {
-		panic(err)
-	}
-	if err := server.Serve(listen); err != nil {
+	if err := grpcServer.Serve(listen); err != nil {
 		panic(err)
 	}
 }

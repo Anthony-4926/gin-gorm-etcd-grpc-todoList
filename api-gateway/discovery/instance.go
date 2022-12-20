@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"google.golang.org/grpc/resolver"
 	"strings"
-)
 
-const schema = "etcd"
+	"google.golang.org/grpc/resolver"
+)
 
 // ServiceInfo 服务配置，描述服务的信息，并不包含服务动作
 type ServiceInfo struct {

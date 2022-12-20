@@ -1,0 +1,7 @@
+time="2022-12-20 14:58:39" level=info msg="userService--rpc error: code = Unknown desc = Error 1062: Duplicate entry '' for key 'user.user_name'"
+time="2022-12-20 15:02:15" level=info msg="userService--rpc error: code = Unknown desc = Error 1062: Duplicate entry '' for key 'user.user_name'"
+time="2022-12-20 15:34:56" level=info msg="userService--rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing dial tcp 127.0.0.1:10001: connectex: No connection could be made because the target machine actively refused it.\""
+time="2022-12-20 15:44:00" level=info msg="userService--rpc error: code = Unknown desc = Error 1062: Duplicate entry '1' for key 'user.user_name'"
+time="2022-12-20 15:46:27" level=info msg="userService--rpc error: code = Unavailable desc = error reading from server: read tcp 127.0.0.1:3529->127.0.0.1:10001: wsarecv: An existing connection was forcibly closed by the remote host."
+time="2022-12-20 15:48:49" level=info msg="userService--rpc error: code = Unavailable desc = error reading from server: read tcp 127.0.0.1:3550->127.0.0.1:10001: wsarecv: An existing connection was forcibly closed by the remote host."
+time="2022-12-20 15:49:25" level=info msg="userService--rpc error: code = Unavailable desc = error reading from server: read tcp 127.0.0.1:3575->127.0.0.1:10001: wsarecv: An existing connection was forcibly closed by the remote host."

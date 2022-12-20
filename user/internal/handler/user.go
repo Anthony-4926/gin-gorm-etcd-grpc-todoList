@@ -7,6 +7,7 @@ import (
 	"user/pkg/e"
 )
 
+// UserService 真正包含服务动作的对象
 type UserService struct {
 }
 

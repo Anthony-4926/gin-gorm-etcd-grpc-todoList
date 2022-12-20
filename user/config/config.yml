@@ -1,4 +1,4 @@
-server:
+grpcServer:
   domain: user
   version: 1.0
   jwtSecret : FanOne

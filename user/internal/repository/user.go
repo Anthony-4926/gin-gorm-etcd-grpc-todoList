@@ -30,17 +30,15 @@ func (user *User) IsUserExist(req *service.UserRequest) bool {
 	return !(DB.Where("name = ?", req.UserName).First(user).Error == gorm.ErrRecordNotFound)
 }
 
-func (*User) Create(req *service.UserRequest) error {
-	var user User
+func (user *User) Create(req *service.UserRequest) error {
 	var count int64
 	DB.Where("user_name=?", req.UserName).Count(&count)
 	if count != 0 {
 		return errors.New("UserName Exist")
 	}
-	user = User{
-		UserName: req.UserName,
-		NickName: req.NickName,
-	}
+	user.UserName = req.UserName
+	user.NickName = req.NickName
+
 	_ = user.SetPassword(req.Password)
 	if err := DB.Create(&user).Error; err != nil {
 		//util.LogrusObj.Error("Insert User Error:" + err.Error())
