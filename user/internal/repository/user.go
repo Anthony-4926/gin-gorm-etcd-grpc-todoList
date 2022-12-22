@@ -27,7 +27,7 @@ func (user *User) BindUser(req *service.UserRequest) (err error) {
 
 // IsUserExist 判断用户是否存在
 func (user *User) IsUserExist(req *service.UserRequest) bool {
-	return !(DB.Where("name = ?", req.UserName).First(user).Error == gorm.ErrRecordNotFound)
+	return !(DB.Where("user_name = ?", req.UserName).First(user).Error == gorm.ErrRecordNotFound)
 }
 
 func (user *User) Create(req *service.UserRequest) error {

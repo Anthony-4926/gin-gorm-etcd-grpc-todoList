@@ -15,7 +15,7 @@ import (
 func main() {
 	config.InitConfig()
 	repository.InitDB()
-	// gprc 与外界通信的地址端口  127.0.0.1: 10001
+	// gprc 与外界通信的地址端口  127.0.0.1: 10002
 	grpcAddress := viper.GetString("grpcServer.grpcAddress")
 
 	// 准备一个grpc server

@@ -10,6 +10,7 @@ func InitMiddleware(service []interface{}) gin.HandlerFunc {
 		c.Keys = make(map[string]interface{})
 		fmt.Println(service[0])
 		c.Keys["user"] = service[0]
+		c.Keys["task"] = service[1]
 		c.Next()
 	}
 }

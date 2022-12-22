@@ -33,7 +33,7 @@ func UserLogin(ginCtx *gin.Context) {
 	var userReq service.UserRequest
 	PanicIfUserError(ginCtx.Bind(&userReq))
 	// gin.Keys中获取服务实例
-	userService := ginCtx.Keys["user"].(service.UserServiceServer)
+	userService := ginCtx.Keys["user"].(service.UserServiceClient)
 	// 执行远程过程调用
 	userResp, err := userService.UserLogin(context.Background(), &userReq)
 	PanicIfUserError(err)
@@ -46,7 +46,6 @@ func UserLogin(ginCtx *gin.Context) {
 		},
 		Status: uint(userResp.Code),
 		Msg:    e.GetMsg(uint(userResp.GetCode())),
-		Error:  err.Error(),
 	}
 	ginCtx.JSON(http.StatusOK, r)
 }

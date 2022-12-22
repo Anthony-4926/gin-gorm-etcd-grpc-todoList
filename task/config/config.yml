@@ -1,5 +1,5 @@
 grpcServer:
-  domain: user
+  domain: task
   version: 1.0
   jwtSecret : FanOne
   grpcAddress: "127.0.0.1:10002"

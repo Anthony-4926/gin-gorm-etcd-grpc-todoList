@@ -1,13 +1,67 @@
-# gin-gorm-etcd-grpc-todoList
+# 项目主要技术
 
-- [Etcd 服务注册](https://cnl25x1hkc.feishu.cn/docx/M90Fd8KJLoTE57xqTc9c3NDdn5f)
+- gin
+- gorm
+- etcd
+- grpc
+- jwt-go
+- logrus
+- viper
+- protobuf
 
+# 项目结构
+
+## 1. gatewagy网关部分
+
+```
+api-gateway/
+├── cmd                   // 启动入口
+├── config                // 配置文件
+├── discovery             // etcd服务注册、keep-alive、获取服务信息等等
+├── internal              // 业务逻辑（不对外暴露）
+│   ├── handler           // 视图层
+│   └── service           // 服务层
+│       └──pb             // 放置生成的pb文件
+├── logs                  // 放置打印日志模块
+├── middleware            // 中间件
+├── pkg                   // 各种包
+│   ├── e                 // 统一错误状态码
+│   ├── res               // 统一response接口返回
+│   └── util              // 各种工具、JWT、Logger等等..
+├── routes                // http路由模块
+└── wrappers              // 各个服务之间的熔断降级
+```
+
+## 2. user && task 用户与任务模块
+
+```
+user/
+├── cmd                   // 启动入口
+├── config                // 配置文件
+├── discovery             // etcd服务注册、keep-alive、获取服务信息等等
+├── internal              // 业务逻辑（不对外暴露）
+│   ├── handler           // 视图层
+│   ├── cache             // 缓存模块
+│   ├── repository        // 持久层
+│   └── service           // 服务层
+│       └──pb             // 放置生成的pb文件
+├── logs                  // 放置打印日志模块
+└── pkg                   // 各种包
+    ├── e                 // 统一错误状态码
+    ├── res               // 统一response接口返回
+    └── util              // 各种工具、JWT、Logger等等..
+```
+
+
+
+# 服务注册与发现
+
+![image-20221222164658510](http://imgbed4926.oss-cn-hangzhou.aliyuncs.com/img/image-20221222164658510.png)
+
+# [Etcd 服务注册](https://cnl25x1hkc.feishu.cn/docx/M90Fd8KJLoTE57xqTc9c3NDdn5f)
   - [服务注册准备](https://cnl25x1hkc.feishu.cn/docx/M90Fd8KJLoTE57xqTc9c3NDdn5f#HOCCd8QmOoyIAexIRRVcWOIinzf)
   - [服务注册整体流程](https://cnl25x1hkc.feishu.cn/docx/M90Fd8KJLoTE57xqTc9c3NDdn5f#YEOmdyAaCouGa0xL9YJcug3Znkp)
   - [客户端与etcd通信](https://cnl25x1hkc.feishu.cn/docx/M90Fd8KJLoTE57xqTc9c3NDdn5f#XKQkdcSw8ooOuOxE7B4cecIfnAc)
-
-
-# 服务注册
 
 ## 服务注册准备
 
@@ -16,7 +70,7 @@
   - **grpc server**：代理service通信，进行远程过程调用。grpc server 会绑定服务接口。
   - **etcd**：服务注册中心
   - **register**：把grpc对外通信的地址端口，以及服务名注册到etcd身上。并且维护etcd与grpc之间的连接。
-  
+
   <img src="http://imgbed4926.oss-cn-hangzhou.aliyuncs.com/img/image-20221220120011013.png" alt="image-20221220120011013" height="300dp" />
 
 ```Go
