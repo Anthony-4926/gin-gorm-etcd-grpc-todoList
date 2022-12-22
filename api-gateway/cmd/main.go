@@ -22,6 +22,7 @@ func main() {
 	etcdAddrs := []string{viper.GetString("etcd.address")}
 	etcdResolver := discovery.NewResolver(etcdAddrs, logrus.New())
 	resolver.Register(etcdResolver)
+
 	go startListen()
 	{
 		osSignal := make(chan os.Signal, 1)
